@@ -13,9 +13,7 @@ class Player:
     def __init__(self, hp=100, score=0, hunger=0):
         self.hp_ = hp
         self.score_ = score
-        self.slot1_ = ''
-        self.slot2_ = ''
-        self.slot3_ = ''
+        self.inventory_ = ['Пусто', 'Пусто', 'Пусто']
         self.hunger_ = hunger
 
 
