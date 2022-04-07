@@ -1,15 +1,15 @@
 from classes import *
 import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument('scenario')
-args = parser.parse_args()
-scenario = open(args.scenario)
-#scenario = open('scenario.txt')
+#parser = argparse.ArgumentParser()
+#parser.add_argument('scenario')
+#args = parser.parse_args()
+#scenario = open(args.scenario)
+scenario = open('scenario.txt')
 
 game_tmp = Game()
 
+
 def read_first_info():  # Анализирует сценарий до пролога
-    all_items = []
     global game_tmp
     all_weapons = []
     all_enemies = []
@@ -20,7 +20,7 @@ def read_first_info():  # Анализирует сценарий до прол�
         if line != '\n':
             if line == 'Пролог:\n':
                 break
-            if line == 'Предметы:\n':
+            if line == 'Оружие:\n':
                 item_flag = True
                 continue
             if line == 'Враги:\n':
@@ -34,20 +34,16 @@ def read_first_info():  # Анализирует сценарий до прол�
             if item_flag:
                 line = line.rstrip()
                 currline = line.split('@')
-                if currline[1] == 'оружие':
-                    weapon = Weapon(currline[0], currline[2])
-                    all_weapons.append(weapon)
-                if currline[1] == 'предмет':
-                    all_items.append(currline[0])
+                weapon = Weapon(currline[0], int(currline[1]))
+                all_weapons.append(weapon)
             if enemy_flag:
                 line = line.rstrip()
                 currline = line.split('@')
-                enemy = Enemy(currline[0], currline[1], currline[2])
+                enemy = Enemy(currline[0], int(currline[1]), int(currline[2]))
                 all_enemies.append(enemy)
             if music_flag:
                 music = line.rstrip()
     game_tmp.music_ = music
-    game_tmp.items_ = all_items
     game_tmp.enemies_ = all_enemies
     game_tmp.weapons_ = all_weapons
 
@@ -124,7 +120,7 @@ def read_locations():
                 if time_flag and both:
                     time = curr_action[-1].split(' ')[1]
                 if condition_flag and both:
-                    condition = curr_action[-1].split(' ')[1:]
+                    condition = curr_action[-1].split(' ')[1]
                     condition_type = curr_action[-1].split(' ')[0]
                 if random_flag:
                     results = res[0].split(' ')[1:]
@@ -133,7 +129,7 @@ def read_locations():
                     location.actions_.append(action)
                     continue
                 if item_flag:
-                    item = res[0].split(':')[1:]
+                    item = res[0].split(':')[1]
                     results = res[1].split(' ')
                     action = ActionWithItemResult(item, int(curr_action[0]), curr_action[1], results, condition, condition_type, time)
                     location.actions_.append(action)
@@ -171,8 +167,12 @@ def read_locations():
                     time = curr_result[-1].split(' ')[1]
                 for k in range(len(curr_result)):
                     if curr_result[k].find('item') != -1:
-                        item_action = curr_result[k].split(' ')[1]
-                        item = curr_result[k].split(' ')[2:]
+                        if curr_result[k].find('+') != -1:
+                            item_action = '+'
+                            item = curr_result[k].split('+')[1]
+                        if curr_result[k].find('-') != -1:
+                            item_action = '-'
+                            item = curr_result[k].split('-')[1]
                     if curr_result[k].find('score') != -1:
                         score_amount = curr_result[k].split(' ')[1]
                     if curr_result[k].find('hp') != -1:

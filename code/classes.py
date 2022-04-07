@@ -1,20 +1,14 @@
 from playsound import playsound
 
 
-#class Item:
- #   def __init__(self, name, typee):
-  #      self.name_ = name
-   #     self.type_ = typee
-
-
 class Player:
-    current_location_ = 0
-
     def __init__(self, hp=100, score=0, hunger=0):
         self.hp_ = hp
         self.score_ = score
-        self.inventory_ = ['Пусто', 'Пусто', 'Пусто']
+        self.inventory_ = []
         self.hunger_ = hunger
+        self.current_location_ = 0
+        self.weapon_ = Weapon('Кулаки', 10)
 
 
 class Enemy:
@@ -31,20 +25,19 @@ class Weapon:
 
 
 class Location:
-    how_much_time_actions_ = [0] * 100
-    how_much_time_results_ = [0] * 100
-
     def __init__(self, number, description, actions, results, name):
         self.number_ = number
         self.description_ = description
         self.actions_ = actions
         self.results_ = results
         self.name_ = name
+        self.how_much_time_actions_ = [0] * 100
+        self.how_much_time_results_ = [0] * 100
 
 
 class Action:
     def __init__(self, number, text, results, condition, condition_type, time):
-        self.numb_ = number
+        self.number_ = number
         self.text_ = text
         self.results_ = results
         self.condition_ = condition
@@ -101,7 +94,6 @@ class EndGameResult(Result):
 
 
 class Game:
-    items_ = []
     weapons_ = []
     enemies_ = []
     locations_ = []
