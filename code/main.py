@@ -22,9 +22,11 @@ def play():
     return show_location()
 
 
-def show_location():
+def show_location(end=''):
     if is_dead():
         gameover('dead')
+        return
+    if end == 'end':
         return
     print()
     print(player.current_location_.name_)
@@ -128,13 +130,18 @@ def result_process(result):     #Делает с результатом дейс
     player.hp_ += int(result.hp_)
     player.hunger_ += int(result.hunger_)
     player.score_ += int(result.score_)
+    is_weapon = False
     if result.item_ != '':
         for i in game.weapons_:
             if i.name_ == result.item_:
                 player.weapon_ = i
-        if result.item_action_ == '+':
-            player.inventory_.append(result.item_)
-        else:
+                is_weapon = True
+        if not is_weapon:
+            if result.item_action_ == '+':
+                player.inventory_.append(result.item_)
+            else:
+                player.inventory_.remove(result.item_)
+        if result.item_action_ == '-':
             player.inventory_.remove(result.item_)
     if isinstance(result, LocationResult):
         for i in game.locations_:
@@ -152,7 +159,7 @@ def choice_action(showed_actions):     #Ожидает ввод действия
     while True:
         action = input()
         for i in player.current_location_.actions_:
-            if action == i.text_:
+            if action == i.text_.lower() or action == i.text_ or action == i.text_.upper():
                 if i in showed_actions:
                     player.current_location_.how_much_time_actions_[i.number_ - 1] += 1
                     return show_result(i)
@@ -160,11 +167,15 @@ def choice_action(showed_actions):     #Ожидает ввод действия
             pass
 
 
-def fight(enemy, strong=0):
+def fight(enemy, strong=0, enemy_strong=0):
     print(f'Напротив вас стоит {enemy.name_} и смотрит злобным взглядом')
+    print(f'Здоровье врага: {enemy.hp_}')
     print()
     show_statistic()
-    enemy_action = random.randint(0, 2)  # 0 - блок  1 - колющий удар  2 - режущий удар
+    if enemy_strong == 1:
+        enemy_action = random.randint(0, 1)
+    else:
+        enemy_action = random.randint(0, 2)  # 0 - блок  1 - колющий удар  2 - режущий удар
     print('Защищаться')
     print('Ударить по прямой')
     print('Рубануть с плеча')
@@ -173,12 +184,13 @@ def fight(enemy, strong=0):
         if strong == 1 and action == 'Рубануть с плеча':
             print('Я устал и пока не могу так ударить')
             input()
-            return fight(enemy, 1)
+            return fight(enemy, 1, enemy_strong)
         else:
-            if action == 'Защищаться':
+            if action == 'Защищаться' or action == 'защищаться' or action == 'ЗАЩИЩАТЬСЯ':
                 if enemy_action == 0:
                     print('Мы оба встали в блок и смотрим друг на друга глупыми взглядами')
                     input()
+                    enemy_strong = 0
                 if enemy_action == 1:
                     if strong == 1:
                         print('Я устал после силового удара и не смог хорошо защититься')
@@ -187,6 +199,7 @@ def fight(enemy, strong=0):
                     else:
                         print('Противник нанёс колющий удар, но я смог его отразить')
                         input()
+                    enemy_strong = 0
                 if enemy_action == 2:
                     if strong == 1:
                         print('Я устал после силового удара и не смог хорошо защититься')
@@ -195,18 +208,25 @@ def fight(enemy, strong=0):
                     else:
                         print('Противник размахнулся и ударил со всей силы. С трудом, но я смог защититься')
                         input()
+                    enemy_strong = 1
+                strong = 0
                 if is_dead():
                     return
                 if enemy.hp_ <= 0:
                     print('Бездыханный враг падает у моих ног')
                     input()
-                    return show_location()
-                return fight(enemy)
+                    return
+                return fight(enemy, strong, enemy_strong)
 
-            if action == 'Ударить по прямой':
+            if action == 'Ударить по прямой' or action == 'ударить по прямой' or action == 'УДАРИТЬ ПО ПРЯМОЙ':
                 if enemy_action == 0:
-                    print('Враг успел встать в блок и мой удар не нанёс вреда')
+                    if enemy_strong == 1:
+                        print('Противник устал после рубящего удара и не смог хорошо защититься')
+                        enemy.hp_ -= int(player.weapon_.damage_ * 0.5)
+                    else:
+                        print('Враг успел встать в блок и мой удар не нанёс вреда')
                     input()
+                    enemy_strong = 0
                 if enemy_action == 1:
                     success_chance = random.randint(0, 1)   # 0 - не повезло, 1 - повезло
                     if success_chance == 0:
@@ -217,38 +237,47 @@ def fight(enemy, strong=0):
                         enemy.hp_ -= player.weapon_.damage_
                         print('Я смог дотянуться до врага и нанёс быстрый удар')
                         input()
+                    enemy_strong = 0
                 if enemy_action == 2:
                     success_chance = random.randint(1, 10)
-                    if success_chance > 3:
+                    if success_chance > 4:
                         player.hp_ -= int(enemy.damage_ * 1.5)
-                        print('Враг оказался сильнее и его рубящий улар пришелся прямо по мне')
+                        print('Враг оказался сильнее и его рубящий удар пришелся прямо по мне')
                         input()
                     else:
                         enemy.hp_ -= player.weapon_.damage_
                         print('Пока враг размахивался, я быстро сократил дистанцию и ударил его')
                         input()
+                    enemy_strong = 1
+                strong = 0
                 if is_dead():
                     return
                 if enemy.hp_ <= 0:
                     print('Бездыханный враг падает у моих ног')
                     input()
-                    return show_location()
-                return fight(enemy)
+                    return
+                return fight(enemy, strong, enemy_strong)
 
-            if action == 'Рубануть с плеча':
+            if action == 'Рубануть с плеча' or action == 'рубануть с плеча' or action == 'РУБАНУТЬ С ПЛЕЧА':
                 if enemy_action == 0:
-                    print('Враг встал в блок и весь мой сильнейщий удар оказался бесполезным')
+                    if enemy_strong == 1:
+                        print('Противник устал после рубящего удара и не смог хорошо защититься')
+                        enemy.hp_ -= int(player.weapon_.damage_ * 0.75)
+                    else:
+                        print('Враг встал в блок и весь мой сильнейщий удар оказался бесполезным')
                     input()
+                    enemy_strong = 0
                 if enemy_action == 1:
                     success_chance = random.randint(1, 10)
-                    if success_chance <= 3:
+                    if success_chance <= 2:
                         player.hp_ -= enemy.damage_
-                        print('Я размахнулся, но враг отошел неминого в сторону и больно ударил меня в бок')
+                        print('Я размахнулся, но враг отошёл немного в сторону и больно ударил меня в бок')
                         input()
                     else:
                         enemy.hp_ -= int(player.weapon_.damage_ * 1.5)
                         print('Мой удар пришелся точно в цель, врагу пришлось не сладко')
                         input()
+                    enemy_strong = 0
                 if enemy_action == 2:
                     success_chance = random.randint(0, 1)  # 0 - не повезло, 1 - повезло
                     if success_chance == 0:
@@ -259,13 +288,15 @@ def fight(enemy, strong=0):
                         enemy.hp_ -= int(player.weapon_.damage_ * 1.5)
                         print('Противник тоже хотел нанести сильный удар, но в последний момент я смог пересилить и ударил его прямо по голове')
                         input()
+                    enemy_strong = 1
+                strong = 1
                 if is_dead():
                     return
                 if enemy.hp_ <= 0:
                     print('Бездыханный враг падает у моих ног')
                     input()
-                    return show_location()
-                return fight(enemy, 1)
+                    return
+                return fight(enemy, strong, enemy_strong)
             else:
                 pass
 
@@ -288,6 +319,8 @@ def gameover(reason):
         print()
         print(f'Спасибо за игру. Ваш счёт: {player.score_}')
         input()
+        return show_location('end')
+
 
 
 input("Добро пожаловать! Чтобы начать игру нажмите 'Enter'")

@@ -8,7 +8,7 @@ class Player:
         self.inventory_ = []
         self.hunger_ = hunger
         self.current_location_ = 0
-        self.weapon_ = Weapon('Кулаки', 10)
+        self.weapon_ = Weapon('кулаки', 10)
 
 
 class Enemy:

@@ -1,10 +1,10 @@
 from classes import *
 import argparse
-#parser = argparse.ArgumentParser()
-#parser.add_argument('scenario')
-#args = parser.parse_args()
-#scenario = open(args.scenario)
-scenario = open('scenario.txt')
+parser = argparse.ArgumentParser()
+parser.add_argument('scenario')
+args = parser.parse_args()
+scenario = open(args.scenario)
+#scenario = open('scenario.txt')
 
 game_tmp = Game()
 
