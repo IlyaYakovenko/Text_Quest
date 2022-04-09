@@ -132,6 +132,7 @@ def result_process(result):     #Делает с результатом дейс
     player.score_ += int(result.score_)
     is_weapon = False
     if result.item_ != '':
+        print(result.item_)
         for i in game.weapons_:
             if i.name_ == result.item_:
                 player.weapon_ = i
@@ -141,7 +142,7 @@ def result_process(result):     #Делает с результатом дейс
                 player.inventory_.append(result.item_)
             else:
                 player.inventory_.remove(result.item_)
-        if result.item_action_ == '-':
+        if result.item_action_ == '-' and is_weapon:
             player.inventory_.remove(result.item_)
     if isinstance(result, LocationResult):
         for i in game.locations_:
