@@ -6,11 +6,3 @@
 Сценарии и музыка должны находиться в папках Scenarios и Music соответственно.
 
 Правила написания сценариев описаны в файле Scenario_Rules в папке Scenarios
-
-
-
-Использованы библиотеки:
-random
-playsound 
-argparse
-pathlib
