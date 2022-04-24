@@ -1,5 +1,5 @@
 import random
-from Code.pre_game_functions import *
+from Code.pre_game_functions import player, game, ActionWithRepeatedResult, ActionWithRandomResult, ActionWithItemResult, Action, LocationResult, EndGameResult, FightResult, read_first_info, read_locations, read_epilogue, read_prologue
 
 
 def show_statistic():

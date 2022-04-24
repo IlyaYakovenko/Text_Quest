@@ -1,4 +1,4 @@
-from Code.classes import *
+from Code.classes import Player, Enemy, Weapon, Location, Action, ActionWithRandomResult, ActionWithRepeatedResult, ActionWithItemResult, Result, LocationResult, FightResult, EndGameResult, Game
 import argparse
 from pathlib import Path
 parser = argparse.ArgumentParser()

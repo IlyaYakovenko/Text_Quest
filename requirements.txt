@@ -1,0 +1,5 @@
+Использованы библиотеки:
+random
+playsound 
+argparse
+pathlib
