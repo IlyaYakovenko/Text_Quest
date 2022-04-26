@@ -1,5 +1,1 @@
-Использованы библиотеки:
-random
-playsound 
-argparse
-pathlib
+playsound==1.3.0
